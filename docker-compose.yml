@@ -1,0 +1,10 @@
+version: '3.8'
+services:
+  app:
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    image: onethk/next1-app:v1
+    ports:
+      - "3001:3000"
+

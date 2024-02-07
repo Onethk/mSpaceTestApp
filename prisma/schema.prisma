@@ -1,0 +1,15 @@
+// prisma/schema.prisma
+
+// Define your database connection
+datasource db {
+  provider = "sqlite" 
+  url      = env("DATABASE_URL")
+}
+
+// Define your data model
+model Subscription {
+  id          Int      @id @default(autoincrement())
+  phoneNumber String
+  username    String
+  password    String
+}
