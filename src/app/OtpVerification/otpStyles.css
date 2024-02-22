@@ -1,0 +1,58 @@
+/* styles.css */
+body{
+    margin: 0;
+    padding: 0;
+
+}
+.otpForm {
+    width: 400px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    /* background: linear-gradient(to right, #647fbd, #517bce);  */
+}
+
+.otpContainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Set height to viewport height for full-page display */
+    background-image: url('banner4.png'); /* Replace 'path/to/your/image.jpg' with the path to your image */
+    background-size: cover; /* Cover the entire container */
+    background-position: center; /* Center the background image */
+}
+
+label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.otpButton {
+    width: calc(100% - 20px);
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.otpButton:hover {
+    background-color: #0056b3;
+}
+
+.textOTP{
+    color: black;
+}
+
+

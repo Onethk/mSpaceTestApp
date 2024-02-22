@@ -5,57 +5,22 @@ import { open, Database } from "sqlite";
 let db = null;
 
 export async function GET(request) {
-  // console.log(request);
-  // Check if request has query parameters
-  // if (!request.query) {
-  //   return NextResponse.json({ message: "No query parameters provided for GET request" });
-  // }
 
-  // Get query parameters from the request
-  // const body1 = await request.json();
   console.log(JSON.parse(request.body));
 
   return NextResponse.json({ })
 
-  // const { phoneNumber, username, password } = body1;
-
-
-
-  // // If either username or password is missing, return an error response
-  // if (!username || !password) {
-  //   return NextResponse.json({ message: "Username and password are required for GET request" });
-  // }
-
-  // // If the database instance is not initialized, open the database connection
-  // if (!db) {
-  //   db = await open({
-  //     filename: "/home/oneth/Work/MspaceCode/next1/prisma/dev.db",
-  //     driver: sqlite3.Database,
-  //   });
-  // }
-
-  // // Check if the provided username and password exist in the database
-  // const user = await db.get(
-  //   "SELECT * FROM Subscription WHERE username = ? AND password = ?",
-  //   [username, password]
-  // );
-
-  // if (user) {
-  //   console.log(`User with username ${username} and password ${password} exists`);
-  //   return NextResponse.json({ message: "User exists with the provided credentials" });
-  // } else {
-  //   console.log(`User not found with the provided credentials`);
-  //   return NextResponse.json({ message: "User not found with the provided credentials" });
-  // }
+  
 }
 
 // Handles POST requests to /api
 export async function POST(request) {
+  console.log("test1")
   // ...
   if (!db) {
     // If the database instance is not initialized, open the database connection
     db = await open({
-      filename: "/home/oneth/Work/MspaceCode/next1/prisma/dev.db", // Specify the database file path
+      filename: "/hms/workOneth/MspaceCode/next1/prisma/dev.db", // Specify the database file path
       driver: sqlite3.Database, // Specify the database driver (sqlite3 in this case)
     });
   }

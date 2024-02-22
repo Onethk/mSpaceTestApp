@@ -1,0 +1,58 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Arial, sans-serif;
+}
+*{
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Set height to viewport height for full-page display */
+    background-image: url('banner4.png'); /* Replace 'path/to/your/image.jpg' with the path to your image */
+    background-size: cover; /* Cover the entire container */
+    background-position: center; /* Center the background image */
+}
+
+.message {
+    position: relative;
+    width: 90vw; /* Set width to 100% of the viewport width */
+    text-align: center;
+    color: #000000; /* Set text color */
+    padding: 10px;
+    border-radius: 5px;
+    background-color: white;
+    /* box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);  */
+}
+
+.message h1,
+.message p {
+    margin: 0; /* Remove default margin for h1 and p */
+    background-color: #ffffff; /* Set background color to white */
+    padding: 10px; /* Add padding to create space around text */
+    border-radius: 5px; /* Add border-radius for rounded corners */
+}
+
+.startButton {
+    width: calc(100% - 20px);
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+.startButton:hover {
+    background-color: #0056b3;
+  }
+
+  
+.descriptionBanner{
+    font-size: 13px;
+}

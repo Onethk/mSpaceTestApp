@@ -1,171 +1,148 @@
 "use client";
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import './formstyles.css';
 
 
-
+// Define a functional component named Form
 const Form = () => {
-    const router = useRouter()
-  const [phoneNum, setPhoneNum] = useState('');
-  const [userName, setUserName] = useState('');
-  const [password, setPassword] = useState('');
+    // Initialize the useRouter hook from Next.js
+    const router = useRouter();
 
-  // const navigate = useNavigate();
+    // Initialize state variables using the useState hook
+    const [phoneNum, setPhoneNum] = useState('');
+    const [userName, setUserName] = useState('');
+    const [password, setPassword] = useState('');
 
-  const [formData, setFormData] = useState({
-    password: '0f9210995fcf47b0e466b0f594f236c2',
-    subscriberId: 'tel:{phoneNum}',
-    applicationHash: 'abcdefgh',
-    applicationMetaData: {
-      client: 'MOBILEAPP',
-      device: 'Samsung S10',
-      os: 'android 8',
-      appCode: 'https://play.google.com/store/apps/details?id=lk',
-    },
-  });
-
-  // console.log('hello1')
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    // console.log("name", name );
-    // console.log("value", value);
-
-    if (name === 'phoneNumber') {
-      setPhoneNum(value);
-    }
-    if (name === 'username') {
-      setUserName(value);
-    }
-    if (name === 'password') {
-      setPassword(value);
-    }
-  };
-
-  const handleClick = async (e) => {
-    e.preventDefault();
-
-    const phoneNumber = formData.subscriberId.replace('tel:', '');
-
-    setFormData({
-      ...formData,
-      subscriberId: `tel:${phoneNumber}`,
+    // Initialize formData state to hold form data
+    const [formData, setFormData] = useState({
+        password: '0f9210995fcf47b0e466b0f594f236c2',
+        subscriberId: 'tel:{phoneNum}', // Template string to be replaced
+        applicationHash: 'abcdefgh',
+        applicationMetaData: {
+            client: 'MOBILEAPP',
+            device: 'Samsung S10',
+            os: 'android 8',
+            appCode: 'https://play.google.com/store/apps/details?id=lk',
+        },
     });
 
-    try {
-      console.log(phoneNum);
-      console.log(userName);
-      console.log(password);
-      console.log('api call');
+    // Function to handle input changes in the form fields
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
 
-      const response = await fetch('http://localhost:3000/api/otpRequests', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          password: 'password', // Update with your password logic
-          subscriberId: `tel:${phoneNum}`,
-          applicationHash: 'abcdefgh',
-          client: 'MOBILEAPP',
-          device: 'Samsung S10',
-          os: 'android 8',
-          appCode: 'https://play.google.com/store/apps/details?id=lk',
-        }),
-        
-      });
+        // Update the corresponding state based on the input field name
+        if (name === 'phoneNumber') {
+            setPhoneNum(value);
+        }
+        if (name === 'username') {
+            setUserName(value);
+        }
+        if (name === 'password') {
+            setPassword(value);
+        }
+    };
 
-      const data = await response.json();
-      console.log(data);
-       
-       if (response.ok) {
-        const saveResponse = fetch('/api/subscribe', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            phoneNumber: phoneNum,
-            username: userName,
-            password: password
-          }),
+    // Function to handle form submission
+    const handleClick = async (e) => {
+        e.preventDefault();
+
+        // Extract phone number from formData and remove 'tel:' prefix
+        const phoneNumber = formData.subscriberId.replace('tel:', '');
+
+        // Update formData with the new phone number
+        setFormData({
+            ...formData,
+            subscriberId: `tel:${phoneNumber}`,
         });
-        
-        
-        // const saveData = await saveResponse.json();
-        // console.log(saveData);
 
-      }
-      
-      router.push('/OtpVerification');
+        try {
+            // Make an API call to submit form data
+            const response = await fetch('http://localhost:3000/api/otpRequests', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    password: 'password', // Placeholder for actual password logic
+                    subscriberId: 'tel:abcdefghijklmnopqrstuvwxyz', // Placeholder for actual subscriberId
+                    applicationHash: 'abcdefgh',
+                    client: 'MOBILEAPP',
+                    device: 'Samsung S10',
+                    os: 'android 8',
+                    appCode: 'https://play.google.com/store/apps/details?id=lk',
+                }),
+            });
 
-      // navigate('/otp');
+            // Parse the response JSON
+            const data = await response.json();
 
-    } catch (error) {
-      console.error('Form submission error:', error);
-    }
-  };
+            // If API call is successful, proceed to OTP verification page
+            if (data.statusCode === "S1000") {
+                // Store form data in localStorage for future use
+                localStorage.setItem("phoneNumber", phoneNum);
+                localStorage.setItem("username", userName);
+                localStorage.setItem("password", password);
+                localStorage.setItem("referenceNumber", data.referenceNo)
+                // Navigate to OTP verification page
+                router.push('/OtpVerification');
+            } else {
+                // Display an alert if something went wrong with the API call
+                alert("Something went wrong")
+            }
+        } catch (error) {
+            console.error('Form submission error:', error);
+        }
+    };
 
-      
-  return (
-    <div className="App">
-      <h1>Knowledge Sharing</h1>
-      <form>
-        <label>
-            Phone Number:
-            <input
-            type="tel"
-            name="phoneNumber"
-            pattern="[0-9]{10}"
-            placeholder="Format: 1234567890"      
-            // value={phoneNumber}
+    // Render the form component
+    return (
+        <div className="formContainerTop">
+            <div className='formContainer'>
+                <form>
+                    <h1 className='formh1'>Stay Informed, Stay Ahead!🌐📱</h1>
+                    <p className='formP'>All your tech news under one roof !</p>
+                    <br></br>
+                    {/* Input field for phone number */}
+                    <label>
+                        Mobile Number:
+                        <input
+                            type="tel"
+                            name="phoneNumber"
+                            pattern="[0-9]{10}"
+                            placeholder="9471xxxxxxx or 9470xxxxxxx"
+                            onChange={handleInputChange}
+                        />
+                    </label>
+                    <br /><br />
+                    {/* Input field for username */}
+                    <label>
+                        Username:
+                        <input
+                            type="text"
+                            name="username"
+                            onChange={handleInputChange}
+                        />
+                    </label>
+                    <br></br>
+                    {/* Input field for password */}
+                    <label>
+                        Password:
+                        <input
+                            type="password"
+                            name="password"
+                            onChange={handleInputChange}
+                        />
+                    </label>
+                    <br></br>
+                    {/* Button to submit the form */}
+                    <button onClick={handleClick} className='subscribeButton'>Request OTP</button>
+                    <br></br>
+                </form>
+            </div>
 
-            // value={formData.subscriberId.replace('tel:', '')} // Extract the number without 'tel:'
-            onChange={handleInputChange}
-            // required
-            />
-        </label>
-
-        <br /><br />
-        <label>
-            Username:
-            <input
-            type="text"
-            name="username"
-            // value={username}
-            // value={formData.applicationMetaData.client}
-            onChange={handleInputChange}
-            // required
-            />
-        </label>
-
-        <br /><br />
-        <label>
-            Password:
-            <input
-            type="password"
-            name="password"
-            // value={password}
-            // value={formData.password}
-            onChange={handleInputChange}
-            // required
-            />
-        </label>
-        <br></br>
-        
-        {/* <subscribeComponent/> */}
-        {/* <button onClick={handleClick} type="submit" href="otp">Subscribe</button> */}
-        <button onClick={handleClick}>Click me</button>
-
-        {/* <Link to="/otp">
-            <button onSubmit={handleClick}>Subscribe</button>
-        </Link> */}
-
-        <br></br>
-        </form>
-    </div>
-  );
+        </div>
+    );
 };
 
 export default Form;
-
