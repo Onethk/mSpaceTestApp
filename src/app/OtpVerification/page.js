@@ -1,27 +1,32 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import './otpStyles.css';
+import { json } from 'react-router-dom';
 
 // Define the OTPVerificationForm component
 const OTPVerificationForm = () => {
   // Initialize state variables using the useState hook
   const [otp, setOtp] = useState('');
   const [subscriptionRequired, setSubscriptionReq] = useState(false); 
+  const router = useRouter(); 
+  
+  // Retrieve phone number and password from localStorage
+  const phonenumber = localStorage.getItem("phoneNumber");
+  const password = localStorage.getItem("password");
 
   // Function to handle OTP verification
   const handleVerifyOTP = async () => {
     // API endpoint for OTP verification
-    const apiUrl = 'http://localhost:3000/api/otpVerifys';
+    const apiUrl = `${process.env.baseUrl1}/otp/verify`;
 
     // Retrieve reference number, phone number, and username from localStorage
     const referenceNumber = localStorage.getItem("referenceNumber");
-    const phonenumber = localStorage.getItem("phoneNumber");
-    const username = localStorage.getItem("username");
 
     // Payload to send for OTP verification
     const payload = {
-      password: '0f9210995fcf47b0e466b0f594f236c2',
+      "applicationId": "APP_000375",
+      "password": "a07118cda5215fc6d01db5b2ab848edd",
       referenceNo: referenceNumber,
       otp: otp,
     };
@@ -37,10 +42,11 @@ const OTPVerificationForm = () => {
       .then(response => response.json())
       .then(data => {
         // Handle response from OTP verification
+        console.log(data);
         if (data.statusCode === "S1000") {
           // Set subscription requirement to true if OTP is correct
           setSubscriptionReq(true);
-          alert('OTP is correct. Verification successful!');
+          console.log(subscriptionRequired);
         } else {
           // Display alert if OTP is incorrect
           alert('Incorrect OTP. Please try again.');
@@ -60,20 +66,41 @@ const OTPVerificationForm = () => {
       const fetchData = async () => {
         try {
           // Make an asynchronous call to subscribe the user
-          const response = await fetch('http://localhost:3000/api/userSubscriptions', {
+          const response = await fetch(`${process.env.baseUrl1}/subscription/send`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
+              "applicationId": "APP_999999",
+              "password": "95904999aa8edb0c038b3295fdd271de",
               "subscriberId": "tel:abcdefghijklmnopqrstuvwxyz", // Placeholder for subscriberId
-              "action": "0", // Placeholder for action
-              password: "password", // Placeholder for password
+              "action": "1", // Placeholder for action
             }),
           });
           // Parse response data
           const jsonData = await response.json();
-          console.log(jsonData); // Log the response data
+          console.log("Subscription",jsonData); // Log the response data
+          if(jsonData.statusCode === "S1000"){
+            const response = await fetch(`http://localhost:3003/api/saveSignUpData`, {
+              method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+
+              "phoneNumber": phonenumber, 
+              password: password, 
+            }),
+
+
+            }).then(response => console.log(response))
+            // saveSignUpData
+            router.push('/SuccessPage');
+          }else{
+            alert("Subscription Failed");
+          }
+                    
         } catch (error) {
           // Handle errors during subscription
           console.error('Error fetching data:', error);

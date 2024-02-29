@@ -29,19 +29,18 @@ export async function POST(request) {
   CREATE TABLE IF NOT EXISTS "Subscription" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "phoneNumber" TEXT NOT NULL,
-    "username" TEXT NOT NULL,
     "password" TEXT NOT NULL
 );
   `)
   const body = await request.json();
-  const { phoneNumber, username, password } = body;
+  const { phoneNumber, password } = body;
   console.log(phoneNumber);
   console.log('from API backend');
 
-  const insertSql = `INSERT INTO Subscription(phoneNumber, username, password) VALUES(?, ?, ?)`;
+  const insertSql = `INSERT INTO Subscription(phoneNumber, password) VALUES(?, ?)`;
         
 
-        db.run(insertSql, [phoneNumber,username,password], function (err) {
+        db.run(insertSql, [phoneNumber,password], function (err) {
           if (err) {
             return console.error(err.message);
           }

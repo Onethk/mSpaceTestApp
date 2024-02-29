@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import './formstyles.css';
 
-
 // Define a functional component named Form
 const Form = () => {
     // Initialize the useRouter hook from Next.js
@@ -11,7 +10,6 @@ const Form = () => {
 
     // Initialize state variables using the useState hook
     const [phoneNum, setPhoneNum] = useState('');
-    const [userName, setUserName] = useState('');
     const [password, setPassword] = useState('');
 
     // Initialize formData state to hold form data
@@ -35,9 +33,6 @@ const Form = () => {
         if (name === 'phoneNumber') {
             setPhoneNum(value);
         }
-        if (name === 'username') {
-            setUserName(value);
-        }
         if (name === 'password') {
             setPassword(value);
         }
@@ -45,6 +40,7 @@ const Form = () => {
 
     // Function to handle form submission
     const handleClick = async (e) => {
+        console.log(process.env.baseUrl1);
         e.preventDefault();
 
         // Extract phone number from formData and remove 'tel:' prefix
@@ -58,13 +54,14 @@ const Form = () => {
 
         try {
             // Make an API call to submit form data
-            const response = await fetch('http://localhost:3000/api/otpRequests', {
+            const response = await fetch(`${process.env.baseUrl1}/otp/request`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    password: 'password', // Placeholder for actual password logic
+                    "applicationId": "APP_000375",
+                    "password": "a07118cda5215fc6d01db5b2ab848edd", // Placeholder for actual password logic
                     subscriberId: 'tel:abcdefghijklmnopqrstuvwxyz', // Placeholder for actual subscriberId
                     applicationHash: 'abcdefgh',
                     client: 'MOBILEAPP',
@@ -81,7 +78,7 @@ const Form = () => {
             if (data.statusCode === "S1000") {
                 // Store form data in localStorage for future use
                 localStorage.setItem("phoneNumber", phoneNum);
-                localStorage.setItem("username", userName);
+                // localStorage.setItem("username", userName);
                 localStorage.setItem("password", password);
                 localStorage.setItem("referenceNumber", data.referenceNo)
                 // Navigate to OTP verification page
@@ -109,22 +106,13 @@ const Form = () => {
                         <input
                             type="tel"
                             name="phoneNumber"
-                            pattern="[0-9]{10}"
+                            pattern="947[01]\d{7}"
                             placeholder="9471xxxxxxx or 9470xxxxxxx"
                             onChange={handleInputChange}
+                            required // Add required attribute to enforce input
                         />
                     </label>
                     <br /><br />
-                    {/* Input field for username */}
-                    <label>
-                        Username:
-                        <input
-                            type="text"
-                            name="username"
-                            onChange={handleInputChange}
-                        />
-                    </label>
-                    <br></br>
                     {/* Input field for password */}
                     <label>
                         Password:
@@ -140,9 +128,24 @@ const Form = () => {
                     <br></br>
                 </form>
             </div>
-
         </div>
     );
 };
 
 export default Form;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
