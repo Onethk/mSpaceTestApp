@@ -146,15 +146,67 @@ export const LoginForm = () => {
 
     };
 
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault();
+    //     const referenceNumber = localStorage.getItem("referenceNumber");
+
+    //     try {
+    //         const response = await fetch(`${process.env.baseUrl2}/api/verifyLogin`, {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json', 
+    //             },
+    //             body: JSON.stringify({
+    //                 "phoneNumber": phoneNum,
+    //                 "password": password
+    //             }),
+    //         });
+    //         console.log("verifyLogin", response);
+    //         console.log(localStorage.getItem("phoneNumber"));
+    //         console.log("hashhh",hashedPhoneNumber);
+
+    //         const response1 = await fetch(`${process.env.baseUrl1}/subscription/getStatus`, {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify({
+    //                 "applicationId": "APP_999999",
+    //                 password: "95904999aa8edb0c038b3295fdd271de",
+    //                 subscriberId: `tel:${hashedPhoneNumber}`
+    //             }),
+    //         });
+    //         const data1 = await response1.json();
+    //         console.log("getstatus", data1);
+    //         console.log("bye",data1.subscriptionStatus);
+    //         localStorage.setItem("userStatus",{phoneNumber: phoneNum,status: data1.subscriptionStatus});
+    //         // if(localStorage.getItem("useStatus"))
+    //         // localStorage.setItem("status", data1.subscriptionStatus);
+
+    //         if (response.redirected) {
+
+    //             router.push(response.url);
+    //         } else {
+    //             const data = await response.json();
+    //             setErrorMessage(data.message);
+    //         }
+    //     } catch (error) {
+    //         console.error('Error checking login:', error);
+    //         setErrorMessage('Internal Server Error');
+    //     }
+    // };
+    
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         const referenceNumber = localStorage.getItem("referenceNumber");
-
+    
         try {
             const response = await fetch(`${process.env.baseUrl2}/api/verifyLogin`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json', 
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
                     "phoneNumber": phoneNum,
@@ -163,8 +215,8 @@ export const LoginForm = () => {
             });
             console.log("verifyLogin", response);
             console.log(localStorage.getItem("phoneNumber"));
-            console.log("hashhh",hashedPhoneNumber);
-
+            console.log("hashhh", hashedPhoneNumber);
+    
             const response1 = await fetch(`${process.env.baseUrl1}/subscription/getStatus`, {
                 method: 'POST',
                 headers: {
@@ -178,23 +230,28 @@ export const LoginForm = () => {
             });
             const data1 = await response1.json();
             console.log("getstatus", data1);
-            localStorage.setItem("userStatus",{phoneNumber: phoneNum,status: data1.subscriptionStatus});
-            // if(localStorage.getItem("useStatus"))
-            // localStorage.setItem("status", data1.subscriptionStatus);
-
-            if (response.redirected) {
-
-                router.push(response.url);
+            localStorage.setItem("userStatus", { phoneNumber: phoneNum, status: data1.subscriptionStatus });
+            
+            // Check if subscription status is "REGISTERED"
+            if (data1.subscriptionStatus === "REGISTERED") {
+                if (response.redirected) {
+                    router.push(response.url);
+                } else {
+                    const data = await response.json();
+                    setErrorMessage(data.message);
+                }
             } else {
-                const data = await response.json();
-                setErrorMessage(data.message);
+                // Display an error message or handle the condition where status is not "REGISTERED"
+                setErrorMessage("Subscription not registered. Please register to proceed.");
+                // setErrorMessage("User at ",data1.subscriptionStatus,"stage. User is not registered");
+
             }
         } catch (error) {
             console.error('Error checking login:', error);
             setErrorMessage('Internal Server Error');
         }
     };
-
+    
     return (
         <div className="formContainerTop">
             <div className='formContainer'>
