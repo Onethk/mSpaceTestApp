@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import './formstyles.css';
+import { useSelector, useDispatch } from 'react-redux';
+
 
 // Define a functional component named Form
 const Form = () => {
@@ -9,8 +11,8 @@ const Form = () => {
     const router = useRouter();
 
     // Initialize state variables using the useState hook
-    const [phoneNum, setPhoneNum] = useState('');
-    const [password, setPassword] = useState('');
+    // const [phoneNum, setPhoneNum] = useState('');
+    // const [password, setPassword] = useState('');
 
     // Initialize formData state to hold form data
     const [formData, setFormData] = useState({
@@ -26,17 +28,32 @@ const Form = () => {
     });
 
     // Function to handle input changes in the form fields
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
+    // const handleInputChange = (e) => {
+    //     const { name, value } = e.target;
 
-        // Update the corresponding state based on the input field name
-        if (name === 'phoneNumber') {
-            setPhoneNum(value);
-        }
-        if (name === 'password') {
-            setPassword(value);
-        }
-    };
+    //     // Update the corresponding state based on the input field name
+    //     if (name === 'phoneNumber') {
+    //         setPhoneNum(value);
+    //     }
+    //     if (name === 'password') {
+    //         setPassword(value);
+    //     }
+    // };
+
+    const dispatch = useDispatch();
+
+  const phoneNum = useSelector((state) => state.phoneNum);
+  const password = useSelector((state) => state.password);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    // Dispatch actions to update phoneNum and password
+    if (name === 'phoneNumber') {
+      dispatch({ type: 'UPDATE_PHONE_NUM', payload: value });
+    } else if (name === 'password') {
+      dispatch({ type: 'UPDATE_PASSWORD', payload: value });
+    } 
+  };
 
     // Function to handle form submission
     const handleClick = async (e) => {
@@ -73,14 +90,12 @@ const Form = () => {
 
             // Parse the response JSON
             const data = await response.json();
-
+            console.log(data);
+            //  console.log("ref",data.referenceNo);
             // If API call is successful, proceed to OTP verification page
             if (data.statusCode === "S1000") {
-                // Store form data in localStorage for future use
-                localStorage.setItem("phoneNumber", phoneNum);
-                // localStorage.setItem("username", userName);
-                localStorage.setItem("password", password);
-                localStorage.setItem("referenceNumber", data.referenceNo)
+                dispatch({ type: 'UPDATE_REFERENCE_NUM', payload: data.referenceNo });
+              
                 // Navigate to OTP verification page
                 router.push('/OtpVerification');
             } else {
@@ -90,7 +105,10 @@ const Form = () => {
         } catch (error) {
             console.error('Form submission error:', error);
         }
+        
+
     };
+
 
     // Render the form component
     return (
@@ -133,19 +151,5 @@ const Form = () => {
 };
 
 export default Form;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

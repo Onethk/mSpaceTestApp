@@ -117,33 +117,53 @@ import './loginStyles.css';
 import { useRouter } from 'next/navigation';
 import { NextResponse } from 'next/server';
 import { generateHash } from '../LoginForm/hashing'; // Import the hashing function
+import { useSelector, useDispatch } from 'react-redux';
 
 
 export const LoginForm = () => {
-    const [phoneNum, setPhoneNum] = useState('');
-    const [password, setPassword] = useState('');
+
+    // State variables for phone number, password, and error message
+    // const [phoneNum, setPhoneNum] = useState('');
+    // const [password, setPassword] = useState('');
+
+    const dispatch = useDispatch();
+
+    const phonenumber = useSelector((state) => state.phoneNum);
+    const password = useSelector((state) => state.password);
+    const referencenumber = useSelector((state) => state.referenceNum);
     const [errorMessage, setErrorMessage] = useState('');
 
-
+    // useRouter hook for navigation
     const router = useRouter();
-    const hashedPhoneNumber = generateHash(phoneNum);
 
-    // const subStatus = localStorage.setItem('subscriptionStatus',value);
-    // const phonenumber = localStorage.getItem("phoneNumber");
-    // console.log(phonenumber);
+    // Hashing the phone number
+    const hashedPhoneNumber = generateHash(phonenumber);
 
+    // Function to handle input changes
+    // const handleInputChange = (e) => {
+    //     const { name, value } = e.target;
+ 
+    //     // Updating local storage and state based on input name
+    //     if (name === 'phoneNumber') {
+    //         localStorage.setItem("phoneNumber",value);
+    //         setPhoneNum(value);
+    //     }
+    //     if (name === 'password') {
+    //         localStorage.setItem("password",value);
+    //         setPassword(value);
+    //     }
+
+    // };
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-
+        // Dispatch actions to update phoneNum and password
         if (name === 'phoneNumber') {
-            localStorage.setItem("phoneNumber",value);
-            setPhoneNum(value);
-        }
-        if (name === 'password') {
-            localStorage.setItem("password",value);
-            setPassword(value);
-        }
-
+            dispatch({ type: 'UPDATE_PHONE_NUM', payload: value });
+        } else if (name === 'password') {
+            dispatch({ type: 'UPDATE_PASSWORD', payload: value });
+        }else if (name === 'referenceNumber') {
+            dispatch({ type: 'UPDATE_REFERENCE_NUM', payload: value });
+        }    
     };
 
     // const handleSubmit = async (e) => {
@@ -200,7 +220,7 @@ export const LoginForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const referenceNumber = localStorage.getItem("referenceNumber");
+        // const referenceNumber = localStorage.getItem("referenceNumber");
     
         try {
             const response = await fetch(`${process.env.baseUrl2}/api/verifyLogin`, {
@@ -209,12 +229,12 @@ export const LoginForm = () => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    "phoneNumber": phoneNum,
+                    "phoneNumber": phonenumber,
                     "password": password
                 }),
             });
             console.log("verifyLogin", response);
-            console.log(localStorage.getItem("phoneNumber"));
+            // console.log(localStorage.getItem("phoneNumber"));
             console.log("hashhh", hashedPhoneNumber);
     
             const response1 = await fetch(`${process.env.baseUrl1}/subscription/getStatus`, {
@@ -230,7 +250,7 @@ export const LoginForm = () => {
             });
             const data1 = await response1.json();
             console.log("getstatus", data1);
-            localStorage.setItem("userStatus", { phoneNumber: phoneNum, status: data1.subscriptionStatus });
+            // localStorage.setItem("userStatus", { phoneNumber: phoneNum, status: data1.subscriptionStatus });
             
             // Check if subscription status is "REGISTERED"
             if (data1.subscriptionStatus === "REGISTERED") {
@@ -267,7 +287,7 @@ export const LoginForm = () => {
                             pattern="947[01]\d{7}"
                             placeholder="9471xxxxxxx or 9470xxxxxxx"
                             onChange={handleInputChange}
-                            value={phoneNum}
+                            value={phonenumber}
                             required
                         />
                     </label>
@@ -294,7 +314,3 @@ export const LoginForm = () => {
 };
 
 export default LoginForm;
-
-
-
-

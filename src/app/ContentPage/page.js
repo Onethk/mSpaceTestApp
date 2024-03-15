@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import './ContentStyles.css';
 import { generateHash } from '../LoginForm/hashing'; // Import the hashing function
+import { useSelector, useDispatch } from 'react-redux';
 
 
 export const ContentPage = () => {
@@ -18,9 +19,12 @@ export const ContentPage = () => {
   
   const [phoneNumber, setPhoneNumber] = useState(""); // State to store phone number
 
+  const phonenumber = useSelector((state) => state.phoneNum); // accessing from store
+  const password = useSelector((state) => state.password);
+
   useEffect(() => {
     // Retrieve phone number from localStorage
-    const storedPhoneNumber = localStorage.getItem("phoneNumber");
+    const storedPhoneNumber = phonenumber;
     setPhoneNumber(storedPhoneNumber);
   }, []);
 
@@ -28,7 +32,7 @@ export const ContentPage = () => {
 
   const handleClick = async(e) => {
     e.preventDefault();
-    console.log("asdfasfasfa sd fasd fasdfasdfasdf ",localStorage.getItem("phoneNumber"))
+    console.log("asdfasfasfa sd fasd fasdfasdfasdf ",phonenumber)
     const payload = {
       "applicationId": "APP_999999",
       password: "95904999aa8edb0c038b3295fdd271de",
@@ -53,7 +57,9 @@ export const ContentPage = () => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({"phoneNumber":localStorage.getItem("phoneNumber"), "password":localStorage.getItem("password")}),
+      body: JSON.stringify({
+        "phoneNumber":phonenumber, 
+        "password":password}),
     })
 
 

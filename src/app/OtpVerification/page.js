@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import './otpStyles.css';
 import { json } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+
 
 // Define the OTPVerificationForm component
 const OTPVerificationForm = () => {
@@ -10,54 +12,117 @@ const OTPVerificationForm = () => {
   const [otp, setOtp] = useState('');
   const [subscriptionRequired, setSubscriptionReq] = useState(false); 
   const router = useRouter(); 
+
   
   // Retrieve phone number and password from localStorage
-  const phonenumber = localStorage.getItem("phoneNumber");
-  const password = localStorage.getItem("password");
+ 
+  const phonenumber = useSelector((state) => state.phoneNum);
+  const password = useSelector((state) => state.password);
+  const dispatch = useDispatch();
+
+
+  const referencenumber = useSelector((state) => state.referenceNum);
+  console.log(phonenumber, password, referencenumber);
+
+  useEffect(() => {
+    if (!referencenumber || referencenumber === 0) {
+      router.push('/form'); // Redirect to the form page
+    }
+  }, [referencenumber, router]);
+
 
   // Function to handle OTP verification
-  const handleVerifyOTP = async () => {
-    // API endpoint for OTP verification
-    const apiUrl = `${process.env.baseUrl1}/otp/verify`;
+  // const handleVerifyOTP = async () => {
+  //   // API endpoint for OTP verification
+  //   const apiUrl = `${process.env.baseUrl1}/otp/verify`;
 
-    // Retrieve reference number, phone number, and username from localStorage
-    const referenceNumber = localStorage.getItem("referenceNumber");
+  //   // Retrieve reference number, phone number, and username from localStorage
+  //   const referenceNumber = localStorage.getItem("referenceNumber");
 
-    // Payload to send for OTP verification
-    const payload = {
-      "applicationId": "APP_000375",
-      "password": "a07118cda5215fc6d01db5b2ab848edd",
-      referenceNo: referenceNumber,
-      otp: otp,
-    };
+  //   // Payload to send for OTP verification
+  //   const payload = {
+  //     "applicationId": "APP_000375",
+  //     "password": "a07118cda5215fc6d01db5b2ab848edd",
+  //     referenceNo: referenceNumber,
+  //     otp: otp,
+  //   };
 
-    // Send POST request to verify OTP
-    fetch(apiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    })
-      .then(response => response.json())
-      .then(data => {
-        // Handle response from OTP verification
-        console.log(data);
-        if (data.statusCode === "S1000") {
-          // Set subscription requirement to true if OTP is correct
-          setSubscriptionReq(true);
-          console.log(subscriptionRequired);
-        } else {
-          // Display alert if OTP is incorrect
-          alert('Incorrect OTP. Please try again.');
-        }
-      })
-      .catch(error => {
-        // Handle errors during OTP verification
-        console.error('Error:', error);
-        alert('An error occurred while verifying OTP. Please try again.');
-      });
+  //   // Send POST request to verify OTP
+  //   fetch(apiUrl, {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify(payload),
+  //   })
+  //     .then(response => response.json())
+  //     .then(data => {
+  //       // Handle response from OTP verification
+  //       console.log(data);
+  //       if (data.statusCode === "S1000") {
+  //         // Set subscription requirement to true if OTP is correct
+  //         setSubscriptionReq(true);
+  //         console.log(subscriptionRequired);
+  //       } else {
+  //         // Display alert if OTP is incorrect
+  //         alert('Incorrect OTP. Please try again.');
+  //       }
+  //     })
+  //     .catch(error => {
+  //       // Handle errors during OTP verification
+  //       console.error('Error:', error);
+  //       alert('An error occurred while verifying OTP. Please try again.');
+  //     });
+  // };
+
+  // Function to handle OTP verification
+const handleVerifyOTP = async () => {
+  // Validate OTP length
+  if (otp.length !== 6) {
+    alert('Please enter a 6-digit OTP.');
+    return;
+  }
+
+  // API endpoint for OTP verification
+  const apiUrl = `${process.env.baseUrl1}/otp/verify`;
+
+  // Retrieve reference number, phone number, and username from localStorage
+  // Payload to send for OTP verification
+  const payload = {
+    "applicationId": "APP_000375",
+    "password": "a07118cda5215fc6d01db5b2ab848edd",
+    referenceNo: referencenumber,
+    otp: otp,
   };
+
+  // Send POST request to verify OTP
+  fetch(apiUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  })
+    .then(response => response.json())
+    .then(data => {
+      // Handle response from OTP verification
+      console.log(data);
+      if (data.statusCode === "S1000") {
+        // Set subscription requirement to true if OTP is correct
+        setSubscriptionReq(true);
+        console.log(subscriptionRequired);
+      } else {
+        // Display alert if OTP is incorrect
+        alert('Incorrect OTP. Please try again.');
+      }
+    })
+    .catch(error => {
+      // Handle errors during OTP verification
+      console.error('Error:', error);
+      alert('An error occurred while verifying OTP. Please try again.');
+    });
+};
+
 
   // Effect hook to handle subscription if required
   useEffect(() => {
@@ -78,9 +143,12 @@ const OTPVerificationForm = () => {
               "action": "1", // Placeholder for action
             }),
           });
+
           // Parse response data
           const jsonData = await response.json();
           console.log("Subscription",jsonData); // Log the response data
+          console.log(jsonData.statusCode);
+          dispatch(updateStatusCode(jsonData.successStatus));
           if(jsonData.statusCode === "S1000"){
             const response = await fetch(`http://localhost:3003/api/saveSignUpData`, {
               method: 'POST',
